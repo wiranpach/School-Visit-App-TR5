@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="th" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[MOCK SIMULATION] ระบบตรวจสอบและบริหารข้อมูลผู้ขอรับทุน กสศ. 01</title>
+    
+    <!-- Tailwind CSS Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                        },
+                        accent: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Sarabun', 'Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts: Sarabun & Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- MARK: - GAPI & GIS Mocks for Simulation -->
+    <script>
+        console.log("%c[SIMULATION MODE ACTIVE]", "color: #16a34a; font-weight: bold; font-size: 14px;");
+        
+        // เซ็ตตัวแปรคอนฟิกหลอกเข้า LocalStorage อัติโนมัติเพื่อความสะดวกสบาย
+        localStorage.setItem('eef_google_client_id', 'MOCK_GOOGLE_CLIENT_ID_2026.apps.googleusercontent.com');
+        localStorage.setItem('eef_google_api_key', 'MOCK_GOOGLE_API_KEY_AIzaSySimulation2026');
+
+        window.mockToken = null;
+
+        // ข้อมูลนักเรียนจำลองสำหรับทำการดึงรายชื่อและทดสอบแก้ไข
+        window.mockFiles = [
+            {
+                id: 'file-student-1100101999991',
+                name: '1100101999991.json',
+                modifiedTime: new Date().toISOString(),
+                content: {
+                    studentID: '1100101999991',
+                    studentName: 'ธีรเดช',
+                    studentLastName: 'มั่นคง',
+                    guardianFirstName: 'ประพนธ์',
+                    guardianLastName: 'มั่นคง',
+                    guardianRelationship: 'บิดา',
+                    guardianID: '3100100222221',
+                    guardianPhone: '0812345678',
+                    guardianOccupation: 'เกษตรกรเลี้ยงปลา',
+                    familyStatus: 'พ่อแม่อยู่ด้วยกัน',
+                    livingWith: 'พ่อ/แม่',
+                    isSyncedWithCloud: true,
+                    syncState: 'Synced',
+                    rentCost: 0,
+                    floorMaterial: 'ซีเมนต์เปลือย',
+                    wallMaterial: 'อิฐ/ก้อนปูน/อิฐบล็อก',
+                    roofMaterial: 'โลหะ (สังกะสี/เหล็ก)',
+                    hasToilet: true,
+                    agricultureLandSize: 'มีที่ดิน 1 ถึง 5 ไร่',
+                    electricitySource: 'ไฟบ้านหรือมิเตอร์',
+                    drinkingWaterSource: 'น้ำดื่มบรรจุขวด/ตู้หยอดน้ำ',
+                    travelMethod: 'จักรยานยนต์ส่วนตัว',
+                    travelDistanceKM: 4.5,
+                    travelTimeHours: 0.3,
+                    travelExpensePerMonth: 250,
+                    addressNo: '12/4',
+                    addressMoo: '3',
+                    addressSoi: 'ร่วมใจ',
+                    addressRoad: 'พหลโยธิน',
+                    addressSubDistrict: 'คลองหนึ่ง',
+                    addressDistrict: 'คลองหลวง',
+                    addressProvince: 'ปทุมธานี',
+                    addressPostcode: '12120',
+                    
+                    // ลายเซ็นและรูปถ่าย Mock เป็นรูปเปล่า / เส้น Signature จำลอง
+                    houseExteriorPhoto: 'iVBORw0KGgoAAAANSUhEUgAAAMgAAACACAYAAACqj9sDAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAAsTAAALEwEAmpwYAAADXElEQVR42u3cQUpDURRFUfevFpwG3InTcdqJM3EiLogO3EocitOAO3Em/mshgRArLq7qPqCg3r2kKAlJh4eXFCSglwAAAAAAAADAx9q57Qe8y8kZ9469o4/7c05OzrxXb71Xb71Xb5NrnNz53b/j9jO519Y5uVuvPnvtW++t99Z767313npvvbfeW++t99Z767313npvvbfeywJzTs7JyYmTM+4de0cf9+ecnJx5r956r956r94m1zi587t/x+1nck+uce6ee++9995777333nvvvffee++9995777333nvvvffee++9995777333nsvCwAAAAAAAAAAAAAAeI+T237Au5yccO/YO/q4P+fk5Mx79dZ79dZ79Ta5xcmd3/07bj+Te22dk7v16rPXvvXeem+9t95b76331nvrvfXeem+9t95b76331nvrvfXeywJzTs7JyYmTM+4de0cf9+ecnJx5r956r956r94m1zi587t/x+1nck+uce6ee++9995777333nvvvffee++9995777333nvvvffee++9995777333nsvCwAAAAAAAAAAAAAAeI+T237Au5yccO/YO/q4P+fk5Mx79dZ79dZ79Ta5xcmd3/07bj+Te22dk7v16rPXvvXeem+9t95b76331nvrvfXeem+9t95b76331nvrvfXeywJzTs7JyYmTM+4de0cf9+ecnJx5r956r956r94m1zi587t/x+1nck+uce6ee++9995777333nvvvffee++9995777333nvvvffee++9995777333nsvCwAAAAAAAAAAAAAAeI+/yccO/YO/q4P+fk5Mx79dZ79dZ79Ta5xcmd3/07bj+Te22dk7v16rPXvvXeem+9t95b76331nvrvfXeem+9t95b76331nvrvfXeywJzTs7JyYmTM+4de0cf9+ecnJx5r956r956r94m1zi587t/x+1nck+uce6ee++9995777333nvvvffee++9995777333nvvvffee++9995777333nsvCwAAAAAAAAAAAAAAeI+T237Au5yccO/YO/q4P+fk5Mx79dZ79dZ79Ta5xcmd3/07bj+Te22dk7v16rPXvvXeem+9t95b76331nvrvfXeem+9t95b76331nvrvfXeywJzTs7JyYmTM+4de0cf9+ecnJx5r956r956r94m1zi587t/x+1nck+uce6ee++9995777333nvvvffee++9995777333nvvvffee++9995777333nsvCwAAAAAAAAAAAAAAeI+T237Au5yccO/YO/q4P+fk5Mx79dZ79dZ79Ta5xcmd3/07bj+Te22dk7v16rPXvvXeem+9t95b76331nvrvfXeem+9t95b76331nvrvfXeem+9t95b76331nvrvfXeywJzTs7JyYmTM+4de0cf9+ecnJx5r956r956r94m1zi587t/x+1nck+uce6ee++9995777333nvvvffee++9995777333nvvvffee++9995777333nsvCwAAAAAAAAAAAAAAeI+T237Au5yccO/YO/q4P+fk5Mx79dZ79dZ79Ta5xcmd3/07bj+Te22dk7v16rPXvvXeem+9t95b76331nvrvfXeem+9t95b76331nvrvfXeem+9t95b76331nvrvfXeywJzTs7JyYmTM+4de0cf9+ecnJx5r956r956r94m1zi587t/x+1nck+uce6ee++9995777333nvvvffee++9995777333nvvvffee++9995777333nsvCwAAAAAAAAAAAAAAeI+T237Au5yccO/YO/q4P+fk5Mx79dZ79dZ79Ta5xcmd3/07bj+Te22dk7v16rPXvvXeem+9t95b76331nvrvfXeem+9t95b76331nvrvfXeem+9t95b76331nvrvfXeywJzTs7JyYmTM+4de0cf9+ecnJx5r956r956r94m1zi587t/x+1nck+uce6ee++9995777333nvvvffee++9995777333nvvvffee++9995777333nsvCwAAAAAAAAAAAAAAeI+T237Au5yccO/YO/q4P+fk5Mx79dZ79dZ79Ta5xcmd3/07bj+Te22dk7v16rPXvvXeem+9t95b76331nvrvfXeem+9t95b76331nvrvfXeem+9t95b76331nvrvfXeywJzTs7JyYmTM+4de0cf9+ecnJx5r956r956r94m1zi587t/x+1nck+uce6ee++9995777333nvvvffee++9995777333nvvvffee++9995777333nsvCwAAAAAA',
+                    signatureStudent: 'iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAYAAACO5Cs6AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAAsTAAALEwEAmpwYAAABUklEQVR42u3awU3DQAwG4N8mYAI2YAI2gAmYgAmYgAlYgAVYAAtgAiZgAu7ECWcCl6Kk82o8qVw/C9sVn4/dOKlV1bWqquqfFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFvB/bXGqqm5V1U1H/uLTMfeue3fde/Zc9v7m2G9nzn7uPzH7uVxb59o699m9z96799m9z96799m9z96799m9z96799m9z96799m9z96799m9z97LAra1dZ7de/bevc/ufebsec5+7v8x+7lcW+faOvfZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eewEWIIAFCGABAliAABYggAUIYAECEEAAAAAAAABYgAUIsAALvxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxbgf21xqqpuVdVNR/7i0zH3rnt33Xv2XPb+5thvZ85+7j8x+7lcW+faOvfZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eywK2tXWe3Xv23r3P7n3m7HnOfu7/Mfu5XFvn2jr32b3P3rv32b3P3rv32b3P3rv32b3P3rv32b3P3rv32b3P3rv3ngAFCGABAliAABYggAUIYAECEEAAAAAAAABYgAUIsAALvxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxbgf21xqqpuVdVNR/7i0zH3rnt33Xv2XPb+5thvZ85+7j8x+7lcW+faOvfZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eywK2tXWe3Xv23r3P7n3m7HnOfu7/Mfu5XFvn2jr32b3P3rv32b3P3rv32b3P3rv32b3P3rv32b3P3rv32b3P3rv3ngAFCGABAliAABYggAUIYAECEEAAAAAAAABYgAUIsAALvxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxbg/wFmB21tXWd34gAAAABJRU5ErkJggg==',
+                    signatureGuardian: 'iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAYAAACO5Cs6AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAAsTAAALEwEAmpwYAAABUklEQVR42u3awU3DQAwG4N8mYAI2YAI2gAmYgAmYgAlYgAVYAAtgAiZgAu7ECWcCl6Kk82o8qVw/C9sVn4/dOKlV1bWqquqfFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFvB/bXGqqm5V1U1H/uLTMfeue3fde/Zc9v7m2G9nzn7uPzH7uVxb59o699m9z96799m9z96799m9z96799m9z96799m9z96799m9z96799m9z96799m9z97LAra1dZ7de/bevc/ufebsec5+7v8x+7lcW+faOvfZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eewEWIIAFCGABAliAABYggAUIYAECEEAAAAAAAABYgAUIsAALvxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxbgf21xqqpuVdVNR/7i0zH3rnt33Xv2XPb+5thvZ85+7j8x+7lcW+faOvfZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eywK2tXWe3Xv23r3P7n3m7HnOfu7/Mfu5XFvn2jr32b3P3rv32b3P3rv32b3P3rv32b3P3rv32b3P3rv32b3P3rv3ngAFCGABAliAABYggAUIYAECEEAAAAAAAABYgAUIsAALvxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxbgf21xqqpuVdVNR/7i0zH3rnt33Xv2XPb+5thvZ85+7j8x+7lcW+faOvfZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eywK2tXWe3Xv23r3P7n3m7HnOfu7/Mfu5XFvn2jr32b3P3rv32b3P3rv32b3P3rv32b3P3rv32b3P3rv32b3P3rv3ngAFCGABAliAABYggAUIYAECEEAAAAAAAABYgAUIsAALvxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxbg/wFmB21tXWd34gAAAABJRU5ErkJggg==',
+                    signatureTeacher: 'iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAYAAACO5Cs6AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAAsTAAALEwEAmpwYAAABUklEQVR42u3awU3DQAwG4N8mYAI2YAI2gAmYgAmYgAlYgAVYAAtgAiZgAu7ECWcCl6Kk82o8qVw/C9sVn4/dOKlV1bWqquqfFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFvB/bXGqqm5V1U1H/uLTMfeue3fde/Zc9v7m2G9nzn7uPzH7uVxb59o699m9z96799m9z96799m9z96799m9z96799m9z96799m9z96799m9z96799m9z96799m9z97LAra1dZ7de/bevc/ufebsec5+7v8x+7lcW+faOvfZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eewEWIIAFCGABAliAABYggAUIYAECEEAAAAAAAABYgAUIsAALvxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxbgf21xqqpuVdVNR/7i0zH3r产3Xv2XPb+5thvZ85+7j8x+7lcW+faOvfZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eywK2tXWe3Xv23r3P7n3m7HnOfu7/Mfu5XFvn2jr32b3P3rv32b3P3rv32b3P3rv32b3P3rv32b3P3rv32b3P3rv3ngAFCGABAliAABYggAUIYAECEEAAAAAAAABYgAUIsAALvxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxbgf21xqqpuVdVNR/7i0zH3rnt33Xv2XPb+5thvZ85+7j8x+7lcW+faOvfZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eywK2tXWe3Xv23r3P7n3m7HnOfu7/Mfu5XFvn2jr32b3P3rv32b3P3rv32b3P3rv32b3P3rv32b3P3rv32b3P3rv3ngAFCGABAliAABYggAUIYAECEEAAAAAAAABYgAUIsAALvxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxbg/wFmB21tXWd34gAAAABJRU5ErkJggg=='
+                }
+            },
+            {
+                id: 'file-student-1200202999992',
+                name: '1200202999992.json',
+                modifiedTime: new Date(Date.now() - 3600000 * 2).toISOString(),
+                content: {
+                    studentID: '1200202999992',
+                    studentName: 'วิภาดา',
+                    studentLastName: 'เก่งงาน',
+                    guardianFirstName: 'ประเสริฐ',
+                    guardianLastName: 'เก่งงาน',
+                    guardianRelationship: 'ปู่',
+                    guardianID: '3200200333332',
+                    guardianPhone: '0898765432',
+                    guardianOccupation: 'รับจ้างทั่วไป',
+                    familyStatus: 'พ่อแม่แยกกันอยู่',
+                    livingWith: 'ญาติ',
+                    isSyncedWithCloud: false,
+                    syncState: 'Pending Sync',
+                    rentCost: 1500,
+                    floorMaterial: 'ไม้กระดาน',
+                    wallMaterial: 'ไม้กระดาน',
+                    roofMaterial: 'ใบไม้/วัสดุธรรมชาติ',
+                    hasToilet: false,
+                    agricultureLandSize: 'ไม่ทำเกษตร',
+                    electricitySource: 'ไฟต่อพ่วง/แบตเตอรี่',
+                    drinkingWaterSource: 'น้ำประปา',
+                    travelMethod: 'เดิน',
+                    travelDistanceKM: 1.2,
+                    travelTimeHours: 0.5,
+                    travelExpensePerMonth: 0,
+                    addressNo: '99',
+                    addressMoo: '1',
+                    addressSoi: '-',
+                    addressRoad: '-',
+                    addressSubDistrict: 'บึงบอน',
+                    addressDistrict: 'หนองเสือ',
+                    addressProvince: 'ปทุมธานี',
+                    addressPostcode: '12170',
+                    
+                    houseExteriorPhoto: 'iVBORw0KGgoAAAANSUhEUgAAAMgAAACACAYAAACqj9sDAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAAsTAAALEwEAmpwYAAADXElEQVR42u3cQUpDURRFUfevFpwG3InTcdqJM3EiLogO3EocitOAO3Em/mshgRArLq7qPqCg3r2kKAlJh4eXFCSglwAAAAAAAADAx9q57Qe8y8kZ9469o4/7c05OzrxXb71Xb71Xb5NrnNz53b/j9jO519Y5uVuvPnvtW++t99Z767313npvvbfeW++t99Z767313npvvbfeywJzTs7JyYmTM+4de0cf9+ecnJx5r956r956r94m1zi587t/x+1nck+uce6ee++9995777333nvvvffee++9995777333nvvvffee++9995777333nsvCwAAAAAAAAAAAAAAeI+T237Au5yccO/YO/q4P+fk5Mx79dZ79dZ79Ta5xcmd3/07bj+Te22dk7v16rPXvvXeem+9t95b76331nvrvfXeem+9t95b76331nvrvfXeywJzTs7JyYmTM+4de0cf9+ecnJx5r956r956r94m1zi587t/x+1nck+uce6ee++9995777333nvvvffee++9995777333nvvvffee++9995777333nsvCwAAAAAAAAAAAAAAeI+T237Au5yccO/YO/q4P+fk5Mx79dZ79dZ79Ta5xcmd3/07bj+Te22dk7v16rPXvvXeem+9t95b76331nvrvfXeem+9t95b76331nvrvfXeywJzTs7JyYmTM+4de0cf9+ecnJx5r956r956r94m1zi587t/x+1nck+uce6ee++9995777333nvvvffee++9995777333nvvvffee++9995777333nsvCwAAAAAAAAAAAAAAeI+/yccO/YO/q4P+fk5Mx79dZ79dZ79Ta5xcmd3/07bj+Te22dk7v16rPXvvXeem+9t95b76331nvrvfXeem+9t95b76331nvrvfXeywJzTs7JyYmTM+4de0cf9+ecnJx5r956r956r94m1zi587t/x+1nck+uce6ee++9995777333nvvvffee++9995777333nvvvffee++9995777333nsvCwAAAAAAAAAAAAAAeI+T237Au5yccO/YO/q4P+fk5Mx79dZ79dZ79Ta5xcmd3/07bj+Te22dk7v16rPXvvXeem+9t95b76331nvrvfXeem+9t95b76331nvrvfXeywJzTs7JyYmTM+4de0cf9+ecnJx5r956r956r94m1zi587t/x+1nck+uce6ee++9995777333nvvvffee++9995777333nvvvffee++9995777333nsvCwAAAAAAAAAAAAAAeI+T237Au5yccO/YO/q4P+fk5Mx79dZ79dZ79Ta5xcmd3/07bj+Te22dk7v16rPXvvXeem+9t95b76331nvrvfXeem+9t95b76331nvrvfXeem+9t95b76331nvrvfXeywJzTs7JyYmTM+4de0cf9+ecnJx5r956r956r94m1zi587t/x+1nck+uce6ee++9995777333nvvvffee++9995777333nvvvffee++9995777333nsvCwAAAAAAAAAAAAAAeI+T237Au5yccO/YO/q4P+fk5Mx79dZ79dZ79Ta5xcmd3/07bj+Te22dk7v16rPXvvXeem+9t95b76331nvrvfXeem+9t95b76331nvrvfXeem+9t95b76331nvrvfXeywJzTs7JyYmTM+4de0cf9+ecnJx5r956r956r94m1zi587t/x+1nck+uce6ee++9995777333nvvvffee++9995777333nvvvffee++9995777333nsvCwAAAAAAAAAAAAAAeI+T237Au5yccO/YO/q4P+fk5Mx79dZ79dZ79Ta5xcmd3/07bj+Te22dk7v16rPXvvXeem+9t95b76331nvrvfXeem+9t95b76331nvrvfXeem+9t95b76331nvrvfXeywJzTs7JyYmTM+4de0cf9+ecnJx5r956r956r94m1zi587t/x+1nck+uce6ee++9995777333nvvvffee++9995777333nvvvffee++9995777333nsvCwAAAAAAAAAAAAAAeI+T237Au5yccO/YO/q4P+fk5Mx79dZ79dZ79Ta5xcmd3/07bj+Te22dk7v16rPXvvXeem+9t95b76331nvrvfXeem+9t95b76331nvrvfXeem+9t95b76331nvrvfXeywJzTs7JyYmTM+4de0cf9+ecnJx5r956r956r94m1zi587t/x+1nck+uce6ee++9995777333nvvvffee++9995777333nvvvffee++9995777333nsvCwAAAAAA',
+                    signatureStudent: 'iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAYAAACO5Cs6AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAAsTAAALEwEAmpwYAAABUklEQVR42u3awU3DQAwG4N8mYAI2YAI2gAmYgAmYgAlYgAVYAAtgAiZgAu7ECWcCl6Kk82o8qVw/C9sVn4/dOKlV1bWqquqfFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFvB/bXGqqm5V1U1H/uLTMfeue3fde/Zc9v7m2G9nzn7uPzH7uVxb59o699m9z96799m9z96799m9z96799m9z96799m9z96799m9z96799m9z96799m9z97LAra1dZ7de/bevc/ufebsec5+7v8x+7lcW+faOvfZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eewEWIIAFCGABAliAABYggAUIYAECEEAAAAAAAABYgAUIsAALvxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxbgf21xqqpuVdVNR/7i0zH3rnt33Xv2XPb+5thvZ85+7j8x+7lcW+faOvfZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eywK2tXWe3Xv23r3P7n3m7HnOfu7/Mfu5XFvn2jr32b3P3rv32b3P3rv32b3P3rv32b3P3rv32b3P3rv32b3P3rv3ngAFCGABAliAABYggAUIYAECEEAAAAAAAABYgAUIsAALvxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxbgf21xqqpuVdVNR/7i0zH3rnt33Xv2XPb+5thvZ85+7j8x+7lcW+faOvfZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eywK2tXWe3Xv23r3P7n3m7HnOfu7/Mfu5XFvn2jr32b3P3rv32b3P3rv32b3P3rv32b3P3rv32b3P3rv32b3P3rv3ngAFCGABAliAABYggAUIYAECEEAAAAAAAABYgAUIsAALvxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxbg/wFmB21tXWd34gAAAABJRU5ErkJggg==',
+                    signatureGuardian: 'iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAYAAACO5Cs6AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAAsTAAALEwEAmpwYAAABUklEQVR42u3awU3DQAwG4N8mYAI2YAI2gAmYgAmYgAlYgAVYAAtgAiZgAu7ECWcCl6Kk82o8qVw/C9sVn4/dOKlV1bWqquqfFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFvB/bXGqqm5V1U1H/uLTMfeue3fde/Zc9v7m2G9nzn7uPzH7uVxb59o699m9z96799m9z96799m9z96799m9z96799m9z96799m9z96799m9z96799m9z96799m9z97LAra1dZ7de/bevc/ufebsec5+7v8x+7lcW+faOvfZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eewEWIIAFCGABAliAABYggAUIYAECEEAAAAAAAABYgAUIsAALvxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxbgf21xqqpuVdVNR/7i0zH3rnt33Xv2XPb+5thvZ85+7j8x+7lcW+faOvfZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eywK2tXWe3Xv23r3P7n3m7HnOfu7/Mfu5XFvn2jr32b3P3rv32b3P3rv32b3P3rv32b3P3rv32b3P3rv32b3P3rv3ngAFCGABAliAABYggAUIYAECEEAAAAAAAABYgAUIsAALvxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxbgf21xqqpuVdVNR/7i0zH3rnt33Xv2XPb+5thvZ85+7j8x+7lcW+faOvfZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eywK2tXWe3Xv23r3P7n3m7HnOfu7/Mfu5XFvn2jr32b3P3rv32b3P3rv32b3P3rv32b3P3rv32b3P3rv3ngAFCGABAliAABYggAUIYAECEEAAAAAAAABYgAUIsAALvxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxbg/wFmB21tXWd34gAAAABJRU5ErkJggg==',
+                    signatureTeacher: 'iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAYAAACO5Cs6AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAAsTAAALEwEAmpwYAAABUklEQVR42u3awU3DQAwG4N8mYAI2YAI2gAmYgAmYgAlYgAVYAAtgAiZgAu7ECWcCl6Kk82o8qVw/C9sVn4/dOKlV1bWqquqfFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFmALFvB/bXGqqm5V1U1H/uLTMfeue3fde/Zc9v7m2G9nzn7uPzH7uVxb59o699m9z96799m9z96799m9z96799m9z96799m9z96799m9z96799m9z96799m9z97LAra1dZ7de/bevc/ufebsec5+7v8x+7lcW+faOvfZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eewEWIIAFCGABAliAABYggAUIYAECEEAAAAAAAABYgAUIsAALvxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxbgf21xqqpuVdVNR/7i0zH3rnt33Xv2XPb+5thvZ85+7j8x+7lcW+faOvfZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eu/fZvc/eywK2tXWe3Xv23r3P7n3m7HnOfu7/Mfu5XFvn2jr32b3P3rv32b3P3rv32b3P3rv32b3P3rv32b3P3rv32b3P3rv3ngAFCGABAliAABYggAUIYAECEEAAAAAAAABYgAUIsAALvxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxZgCxbg/wFmB21tXWd34gAAAABJRU5ErkJggg=='
+                    
+                }
+            }
+        ];
+
+        // แทรกแซงระบบ GAPI
+        window.gapi = {
+            load: (lib, cb) => {
+                console.log(`[Mock GAPI] โหลดไลบรารี: ${lib}`);
+                setTimeout(cb, 100);
+            },
+            client: {
+                init: async (config) => {
+                    console.log("[Mock GAPI Client] ตั้งค่า API Key สำเร็จ:", config.apiKey);
+                },
+                getToken: () => window.mockToken,
+                setToken: (token) => { window.mockToken = token; },
+                request: async (req) => {
+                    console.log("[Mock GAPI Request] ส่งคำขอ API:", req);
+                    if (req.method === 'PATCH') {
+                        // จำลองเขียนทับข้อมูลในหน่วยความจำแคช
+                        const updatedData = JSON.parse(req.body);
+                        const fileId = req.path.split('/').pop();
+                        const fileIndex = window.mockFiles.findIndex(f => f.id === fileId);
+                        if (fileIndex !== -1) {
+                            window.mockFiles[fileIndex].content = updatedData;
+                            window.mockFiles[fileIndex].modifiedTime = new Date().toISOString();
+                        }
+                        return { result: updatedData };
+                    }
+                },
+                drive: {
+                    files: {
+                        list: async (params) => {
+                            console.log("[Mock GAPI Drive List] ตรวจสอบโฟลเดอร์/ค้นหาไฟล์:", params.q);
+                            if (params.q.includes('EEF_Student_Subsidies')) {
+                                return { result: { files: [{ id: 'folder-root-id', name: 'EEF_Student_Subsidies' }] } };
+                            } else if (params.q.includes('01_Raw_Data_JSON')) {
+                                return { result: { files: [{ id: 'folder-sub-id', name: '01_Raw_Data_JSON' }] } };
+                            } else {
+                                // ส่งรายการไฟล์ JSON กลับไป
+                                return { result: { files: window.mockFiles } };
+                            }
+                        },
+                        get: async (params) => {
+                            console.log("[Mock GAPI Drive Get] ดาวน์โหลดข้อมูลดิบของไฟล์ ID:", params.fileId);
+                            const file = window.mockFiles.find(f => f.id === params.fileId);
+                            return { result: file ? file.content : null };
+                        }
+                    }
+                }
+            }
+        };
+
+        // แทรกแซงระบบ GIS OAuth2
+        window.google = {
+            accounts: {
+                oauth2: {
+                    initTokenClient: (config) => {
+                        console.log("[Mock GIS] กำหนด Client ID:", config.client_id);
+                        return {
+                            requestAccessToken: (options) => {
+                                console.log("[Mock GIS] กำลังแสดงหน้าต่าง OAuth จำลอง...");
+                                window.mockToken = { access_token: 'mock-oauth2-access-token-simulation-active' };
+                                config.callback({ access_token: 'mock-oauth2-access-token-simulation-active' });
+                            },
+                            revokeToken: (token) => {
+                                console.log("[Mock GIS] ทำการสลายสิทธิ์ Access Token");
+                            }
+                        };
+                    }
+                }
+            }
+        };
+
+        // สั่งให้ระบบ SDK โหลดอัตโนมัติเมื่อเอกสารและ Mocks พร้อมทำงาน
+        setTimeout(() => {
+            if (typeof gapiInit === 'function') gapiInit();
+            if (typeof gisInit === 'function') gisInit();
+            console.log("[Simulation] โหลด Mocks เรียบร้อยและกระตุ้นการทำงาน app.js");
+        }, 300);
+    </script>
+</head>
+<body class="h-full font-sans antialiased text-slate-800 flex flex-col">
+
+    <!-- แถบแจ้งเตือนว่าอยู่บนโหมดจำลองสถานการณ์ -->
+    <div class="bg-amber-500 text-white text-xs font-bold text-center py-2 px-4 flex items-center justify-center space-x-2">
+        <i class="fa-solid fa-flask-vial animate-bounce"></i>
+        <span>ระบบจำลองการทำงานสำหรับการตรวจงาน (MOCK SIMULATION MODE) - สามารถเปิดใช้งานและเทสเซฟข้อมูลได้ทันที</span>
+    </div>
+
+    <!-- Top Navigation Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-brand-600 text-white p-2 rounded-lg shadow-md shadow-brand-500/20 flex items-center justify-center">
+                    <i class="fa-solid fa-graduation-cap text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-slate-900 tracking-tight">ระบบบริหารทุน กสศ. 01</h1>
+                    <p class="text-xs text-slate-500">Windows Companion Portal v1.0 [SIMULATOR]</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div id="auth-status-bar" class="flex items-center space-x-3">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800" id="auth-badge">
+                        <span class="w-1.5 h-1.5 mr-1.5 rounded-full bg-red-600"></span>ยังไม่ได้เข้าสู่ระบบ
+                    </span>
+                    <button id="signin-button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-semibold rounded-lg shadow-sm text-white bg-brand-600 hover:bg-brand-700 focus:outline-none transition-all duration-200">
+                        <i class="fa-solid fa-key mr-2"></i>ล็อกอินจำลอง
+                    </button>
+                    <button id="signout-button" class="hidden inline-flex items-center px-4 py-2 border border-slate-300 text-sm font-semibold rounded-lg text-slate-700 bg-white hover:bg-slate-50 focus:outline-none transition-all duration-200">
+                        <i class="fa-solid fa-arrow-right-from-bracket mr-2"></i>ออกจากระบบจำลอง
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        
+        <!-- Google API Configuration Section (Collapsible Card) -->
+        <section class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden transition-all duration-300">
+            <button id="btn-toggle-config" class="w-full px-6 py-4 flex items-center justify-between bg-slate-50 hover:bg-slate-100/80 transition-colors">
+                <div class="flex items-center space-x-2 text-slate-700">
+                    <i class="fa-solid fa-gears text-slate-500"></i>
+                    <span class="font-bold text-sm">การตั้งค่า Google Cloud API สำหรับโรงเรียน (หลอกให้แล้ว)</span>
+                </div>
+                <i id="config-caret" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-200"></i>
+            </button>
+            
+            <div id="config-fields-panel" class="p-6 border-t border-slate-200 space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wide">Google Client ID</label>
+                        <input type="text" id="input-client-id" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-slate-50">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wide">Google API Key</label>
+                        <input type="password" id="input-api-key" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-slate-50">
+                    </div>
+                </div>
+                <div class="flex justify-end pt-2">
+                    <button id="btn-save-config" class="inline-flex items-center px-4 py-2 text-xs font-bold text-white bg-slate-700 hover:bg-slate-800 rounded-lg shadow-sm focus:outline-none transition-all duration-200">
+                        <i class="fa-solid fa-floppy-disk mr-1.5"></i>เซฟทับจำลอง
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Overview Cards Grid -->
+        <section class="grid grid-cols-1 gap-5 sm:grid-cols-3">
+            <div class="bg-white overflow-hidden shadow-sm rounded-xl border border-slate-200 p-5 flex items-center justify-between">
+                <div>
+                    <dt class="text-sm font-medium text-slate-500 truncate">ข้อมูลที่ดึงได้ทั้งหมด</dt>
+                    <dd class="mt-1 text-3xl font-extrabold text-slate-900" id="stat-total">0</dd>
+                </div>
+                <div class="bg-indigo-50 text-indigo-600 p-3.5 rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-folder-open text-xl"></i>
+                </div>
+            </div>
+
+            <div class="bg-white overflow-hidden shadow-sm rounded-xl border border-slate-200 p-5 flex items-center justify-between">
+                <div>
+                    <dt class="text-sm font-medium text-slate-500 truncate">ข้อมูลซิงก์สำเร็จ</dt>
+                    <dd class="mt-1 text-3xl font-extrabold text-brand-600" id="stat-synced">0</dd>
+                </div>
+                <div class="bg-green-50 text-brand-600 p-3.5 rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-cloud-arrow-up text-xl"></i>
+                </div>
+            </div>
+
+            <div class="bg-white overflow-hidden shadow-sm rounded-xl border border-slate-200 p-5 flex items-center justify-between">
+                <div>
+                    <dt class="text-sm font-medium text-slate-500 truncate">รอดำเนินการคัดกรอง</dt>
+                    <dd class="mt-1 text-3xl font-extrabold text-amber-500" id="stat-pending">0</dd>
+                </div>
+                <div class="bg-amber-50 text-amber-500 p-3.5 rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-hourglass-half text-xl"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Core: Filters & Student Directory Table -->
+        <section class="bg-white shadow-sm rounded-xl border border-slate-200 overflow-hidden flex flex-col">
+            <div class="px-6 py-5 border-b border-slate-200 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div class="relative flex-grow max-w-lg" id="search-input-wrapper">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fa-solid fa-magnifying-glass text-slate-400 text-sm"></i>
+                    </div>
+                    <input type="text" id="search-input" placeholder="ค้นหาด้วยรหัสประจำตัวประชาชน หรือ ชื่อนักเรียน..." class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg text-sm placeholder-slate-400 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500">
+                </div>
+                
+                <div class="flex items-center space-x-2">
+                    <button id="btn-show-table" class="inline-flex items-center px-4 py-2 border border-brand-600 bg-brand-50 text-sm font-semibold rounded-lg text-brand-700 shadow-sm focus:outline-none transition-all duration-200">
+                        <i class="fa-solid fa-table-list mr-2"></i>ตารางรายชื่อ
+                    </button>
+                    <button id="btn-show-dashboard" class="inline-flex items-center px-4 py-2 border border-slate-300 bg-white text-sm font-semibold rounded-lg text-slate-700 hover:bg-slate-50 shadow-sm focus:outline-none transition-all duration-200">
+                        <i class="fa-solid fa-chart-line mr-2"></i>แดชบอร์ดผู้บริหาร
+                    </button>
+                    <button id="btn-refresh" class="inline-flex items-center px-4 py-2 border border-slate-300 text-sm font-semibold rounded-lg text-slate-700 bg-white hover:bg-slate-50 shadow-sm focus:outline-none transition-all duration-200">
+                        <i class="fa-solid fa-arrows-rotate mr-2"></i>รีดึงคีย์จำลอง
+                    </button>
+                </div>
+            </div>
+
+            <!-- TABLE VIEW CONTENT -->
+            <div id="table-view-content" class="flex flex-col">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-200">
+                        <thead class="bg-slate-50 text-xs font-bold text-slate-500 uppercase tracking-wider text-left">
+                            <tr>
+                                <th scope="col" class="px-6 py-3.5">ลำดับ</th>
+                                <th scope="col" class="px-6 py-3.5">เลขประจำตัวประชาชน / ID G</th>
+                                <th scope="col" class="px-6 py-3.5">ชื่อ - นามสกุล</th>
+                                <th scope="col" class="px-6 py-3.5">ความสัมพันธ์ผู้ปกครอง</th>
+                                <th scope="col" class="px-6 py-3.5">แก้ไขล่าสุด</th>
+                                <th scope="col" class="px-6 py-3.5">สถานะ</th>
+                                <th scope="col" class="px-6 py-3.5 text-right">ดำเนินการ</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 bg-white text-sm" id="student-table-body">
+                            <tr class="loader-placeholder">
+                                <td colspan="7" class="px-6 py-10 text-center text-slate-500">
+                                    <div class="flex flex-col items-center justify-center space-y-4">
+                                        <div class="w-8 h-8 border-4 border-slate-200 border-t-brand-600 rounded-full animate-spin"></div>
+                                        <p class="text-xs font-medium text-slate-400">กำลังกระตุ้น Sandbox ระบบจำลอง...</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="empty-state" class="hidden px-6 py-16 text-center text-slate-500">
+                    <i class="fa-solid fa-box-open text-slate-300 text-4xl mb-4"></i>
+                    <h3 class="text-sm font-semibold text-slate-900">ไม่พบเอกสารใดๆ</h3>
+                    <p class="text-xs text-slate-500 mt-1">ยังไม่มีการบันทึกแบบร่างขึ้น Google Drive หรือระเบิดคิวออฟไลน์จาก iPad</p>
+                </div>
+                
+                <div class="px-6 py-4 border-t border-slate-200 bg-slate-50/50 flex items-center justify-between text-xs text-slate-500">
+                    <span id="pagination-info">แสดง 0 ถึง 0 จากทั้งหมด 0 รายการ</span>
+                    <div class="flex space-x-1" id="pagination-controls">
+                        <button class="px-3 py-1.5 border border-slate-300 rounded bg-white hover:bg-slate-50 disabled:opacity-50" disabled>ก่อนหน้า</button>
+                        <button class="px-3 py-1.5 border border-slate-300 rounded bg-white hover:bg-slate-50 disabled:opacity-50" disabled>ถัดไป</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXECUTIVE ANALYTICS PORTAL CONTENT -->
+            <div id="executive-dashboard-content" class="hidden p-6 bg-slate-50/30">
+                <div id="executive-dashboard-container">
+                    <div class="text-center py-12 text-slate-500">
+                        <i class="fa-solid fa-chart-pie text-slate-300 text-5xl mb-4 block animate-pulse"></i>
+                        <p class="text-sm font-medium">กำลังคำนวณสถิติและวิเคราะห์ดัชนีทางสังคมครัวเรือน...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Floating Global Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-10 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900 text-white px-4 py-3 rounded-lg shadow-xl flex items-center space-x-3 text-xs z-50">
+        <i id="toast-icon" class="fa-solid fa-circle-info text-brand-500"></i>
+        <span id="toast-message">แจ้งเตือนระบบ</span>
+    </div>
+
+    <!-- โหลดสคริปต์แก้ไขและ app.js ของจริงเพื่อรัน Logic ครอบ Mocks ด้านบน -->
+    <script src="WebFormEditor.component.js"></script>
+    <script src="Components/ExecutiveSummaryPortal.component.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

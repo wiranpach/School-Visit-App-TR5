@@ -1,0 +1,49 @@
+name: Build and Package Ad-Hoc iOS App
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Compile and Package Ad-Hoc IPA
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: 'latest-stable'
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+
+      - name: Configure Certificates & Profiles
+        env:
+          APP_CERTIFICATE_BASE64: ${{ secrets.APP_CERTIFICATE_BASE64 }}
+          PROVISION_PROFILE_BASE64: ${{ secrets.PROVISION_PROFILE_BASE64 }}
+        run: |
+          mkdir -p build/secrets
+          echo "$APP_CERTIFICATE_BASE64" | base64 --decode > build/secrets/dist_certificate.p12
+          echo "$PROVISION_PROFILE_BASE64" | base64 --decode > build/secrets/ad_hoc_provision.mobileprovision
+
+      - name: Run Fastlane Ad-Hoc Build
+        env:
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+          APP_CERTIFICATE_PATH: "build/secrets/dist_certificate.p12"
+          PROVISION_PROFILE_PATH: "build/secrets/ad_hoc_provision.mobileprovision"
+        run: bundle exec fastlane build_ad_hoc
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: EEF_App_IPA
+          path: ./build/EEF_App.ipa
+          if-no-files-found: error
