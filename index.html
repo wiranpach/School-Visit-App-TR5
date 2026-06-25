@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="เยี่ยมบ้าน กสศ.">
+  
+  <title>ระบบบันทึกข้อมูลเยี่ยมบ้านนักเรียน กสศ. 01</title>
+  
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  
+  <!-- Typography & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="header-branding">
+      <div class="logo-icon">🌿</div>
+      <div>
+        <h1>กสศ. 01 (เยี่ยมบ้าน)</h1>
+        <p class="subtitle" id="header-school-info">โปรดตั้งค่าข้อมูลโรงเรียน</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <span class="status-indicator online" id="sync-status">ออนไลน์</span>
+      <button id="btn-toggle-settings" class="icon-button" title="ตั้งค่าระบบ">⚙️ ตั้งค่า</button>
+    </div>
+  </header>
+
+  <!-- Main View Area -->
+  <main class="app-main-content">
+    <!-- settings view -->
+    <div id="app-settings" class="app-view hidden"></div>
+
+    <!-- dashboard view -->
+    <div id="app-dashboard" class="app-view hidden"></div>
+
+    <!-- form wizard container -->
+    <div id="form-wizard-container" class="app-view hidden"></div>
+  </main>
+
+  <!-- Global Loader -->
+  <div id="global-loader" class="loader-overlay hidden">
+    <div class="loader-spinner"></div>
+    <p id="loader-text">กำลังประมวลผล...</p>
+  </div>
+
+  <!-- Script Modules -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
